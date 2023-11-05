@@ -1,19 +1,19 @@
-function toggleSortingBlock() {
-    let filterDropdown = $(".shop-filter-dropdown")
-    filterDropdown.hasClass("show") ? filterDropdown.removeClass("show") : filterDropdown.addClass("show")
-}
-$("#dropdown_sorty_by").click(toggleSortingBlock)
 
-function initChangingItems() {
+
+function openAndCloseFilters() {
+    $(this).next().hasClass("d-none") ? $(this).next().removeClass("d-none") : $(this).next().addClass("d-none")
+}
+$(".filter-item-name").click(openAndCloseFilters)
+
+function initFilteringItems() {
     let changingItems = [];
     $(data).each((i, item) => {
         changingItems.push(item);
     });
- 
     return changingItems;
 }
 
-function insertData(changingItems) {
+function insertFilteredData(changingItems) {
     let results_count = changingItems.length;
     if(results_count == 0){
         $(".load_more_current_results").text("No products found")
@@ -141,71 +141,193 @@ function insertData(changingItems) {
     `)
     })
 }
-
-function sortBy(priceortitle) {
-    let changingItems = initChangingItems();
-    let arg = [];
-    changingItems.map((item) =>{
-        if (priceortitle === "title") {
-            arg.push(item.title)
-        }else{
-            arg.push(item.price)
+// filter by category
+function filterByCategory() {
+    let filteringItems = initFilteringItems();
+    let filteredItems = [];
+    let category = $(this).find("span>span").text();
+    filteringItems.map((item) => {
+        if (item.category == category) {
+            filteredItems.push(item)
         }
     })
+    insertFilteredData(filteredItems)
+}
+$(".filter_item_link").click(filterByCategory);
 
-    for (let i = 1; i < arg.length; i++) {
-        for (let j = i - 1; j > -1; j--) {
-            // console.log(changingItems[i]);
-            if (priceortitle === "title") {
-                if (changingItems[j + 1].title < changingItems[j].title) {
-                    [changingItems[j + 1], changingItems[j]] = [changingItems[j], changingItems[j + 1]];
-                }
-            }
-            else if (changingItems[j + 1].price < changingItems[j].price) {
-                [changingItems[j + 1], changingItems[j]] = [changingItems[j], changingItems[j + 1]];
-            }
-        }
+// filter by brand letters
+let brandClickedLetters = [];
+function filterByBrand() {
+    let letter = $(this).text();
+    if (!($(this).hasClass("selected"))) {
+        $(this).addClass("selected");
+        brandClickedLetters.push(letter);
+    }
+    else {
+        $(this).removeClass("selected");
+        let updateBrandClickedLetters = brandClickedLetters.filter((it) => it != letter);
+        brandClickedLetters = updateBrandClickedLetters;
     }
 
-    return changingItems
+    $(".filer_brand_item").map(function () {
+
+        $(this).parent().parent().hasClass("d-none") ? $(this).parent().parent().removeClass("d-none") : null;
+        brandClickedLetters.find((item) => item == $(this).text().slice(0,1)) ? $(this).parent().parent().removeClass("d-none") : $(this).parent().parent().addClass("d-none")
+
+    });
+
+    if(brandClickedLetters.length == 0){
+        $(".brand_filter").map(function (i,item) {
+            $(this).removeClass("d-none");
+        })
+    }
+
+}
+$(".btn-letter").click(filterByBrand);
+
+// filter by brands
+let filteredBrands = [];
+let brandFiltersCount = 0;
+
+function showBrandFilters(){
+    if($(this).hasClass("active")){
+        $(this).removeClass("active");
+        brandFiltersCount--
+    } 
+    else{
+        $(this).addClass("active");
+        brandFiltersCount++
+    } 
+    let filteredBrandName = $(this).children().text().trim();
+    filteredBrands.push(filteredBrandName)
+
+    if(brandFiltersCount<=2){
+         $(".filter_container").append(`
+            <div class="js_clean_filter_parent first_second">
+                <span class="filter-name">${filteredBrandName}</span>
+                <span class="js_clean_filter">
+                    <img src="assets/img/Close.svg" alt="close">
+                </span>
+            </div>
+        `);
+        $(".sort-items-block").append(`
+            <div class="js_clean_filter_parent">
+                <span class="filter-name">${filteredBrandName}</span>
+                <span class="js_clean_filter">
+                    <img src="assets/img/Close.svg" alt="close">
+                </span>
+            </div>
+            `);
+    }
+    else{
+        $(".brand_filters_count").text(brandFiltersCount);
+        $(".filter-name").text(filteredBrandName);
+        $(".sort-items-block").removeClass("d-none");
+        $("#more_filters").removeClass("d-none");
+        $(".first_second").addClass("d-none");
+
+        $(".sort-items-block").append(`
+        <span class="js_clean_filter_parent">
+            <span class="filter-name">
+                Ammi
+            </span>
+            <span class="js_clean_filter">
+                <img src="../assets/img/Close.svg" alt="close">
+            </span>
+        </span>
+        `)
+        
+    }
 }
 
-function sortByHighToLow() {
-    let changingItems = sortBy("price")
-    changingItems.reverse();
-    // changingItems.prices.reverse();
-    insertData(changingItems)
-    return changingItems
-}
-function sortByLowToHigh() {
-    let changingItems = sortBy("price")
-    insertData(changingItems)
-    return changingItems
-}
-function sortByAToZ() {
-    let changingItems = sortBy("title")
-    insertData(changingItems)
-    return changingItems;
-}
-function sortByZToA() {
-    let changingItems = sortBy("title")
-    changingItems.reverse();
-    // changingItems.prices.reverse();
-    insertData(changingItems)
-    return changingItems;
+function removeBrandFilters(){
+    // =======================================================
 }
 
-let sortItemLinks = $(".sort_filter_link");
-$(sortItemLinks[0]).click(sortByHighToLow);
-$(sortItemLinks[1]).click(sortByLowToHigh);
-$(sortItemLinks[2]).click(sortByAToZ);
-$(sortItemLinks[3]).click(sortByZToA);
-
-
-// burger menu show and hide in media
-function toggleBurgerMenuBlock() {
-    let burgerMenuBlock = $("#top_menu_collapse")
-    burgerMenuBlock.hasClass("show") ? burgerMenuBlock.removeClass("show") : burgerMenuBlock.addClass("show")
+function resetAll(){
+    // =======================================================
 }
-$(".navbar-toggler").click(toggleBurgerMenuBlock)
-$(".close-btn").click(toggleBurgerMenuBlock)
+
+function showAllFilters(){
+    $(".js-filter-tags-container").removeClass("d-none")
+    $(".sort-items-block").addClass("d-block")
+    $("#more_filters").removeClass("d-none");
+    $(".first_second").addClass("d-none")
+
+}
+
+function allBrandsFilter(){
+    $(".all_brands_filter").addClass("active");
+    $(".brand_filter").removeClass("active");
+}
+
+
+$(".js_clean_filter").click(removeBrandFilters)
+$(".brand_filter").click(showBrandFilters)
+$(".all_brands_filter ").click(allBrandsFilter)
+$(".filterBrandTwoPlus").click(showAllFilters)
+$(".js_clean_filter").click(removeBrandFilters)
+$(".reset_all").click(resetAll)
+$(".reset-all-btn").click(resetAll)
+
+
+// filter by Manufacturers
+// ------------------------------------------------------------------------
+
+
+
+// filter by Price
+var lowerSlider = document.querySelector('#lower');
+var  upperSlider = document.querySelector('#upper');
+
+document.querySelector('#two').value=upperSlider.value;
+document.querySelector('#one').value=lowerSlider.value;
+
+var  lowerVal = parseInt(lowerSlider.value);
+var upperVal = parseInt(upperSlider.value);
+
+upperSlider.oninput = function () {
+    lowerVal = parseInt(lowerSlider.value);
+    upperVal = parseInt(upperSlider.value);
+    if (upperVal < lowerVal + 4) {
+        lowerSlider.value = upperVal - 4;
+        if (lowerVal == lowerSlider.min) {
+        upperSlider.value = 4;
+        }
+    }
+    document.querySelector('#one').value=lowerVal
+    document.querySelector('#two').value=upperVal
+    showFilteredItems();
+};
+
+lowerSlider.oninput = function () {
+    lowerVal = parseInt(lowerSlider.value);
+    upperVal = parseInt(upperSlider.value);
+    if (lowerVal > upperVal - 4) {
+        upperSlider.value = lowerVal + 4;
+        if (upperVal == upperSlider.max) {
+            lowerSlider.value = parseInt(upperSlider.max) - 4;
+        }
+    }
+    document.querySelector('#one').value=lowerVal
+    document.querySelector('#two').value=upperVal
+    showFilteredItems();
+};
+
+// fiter data prices
+
+function showFilteredItems(){
+    let filterItems = initFilteringItems();
+    let filteredItems = [];
+
+    filterItems.map((item) => {
+        if (item.price >= lowerVal && item.price <= upperVal) {
+            filteredItems.push(item)
+        }
+    })
+    insertFilteredData(filteredItems)
+}
+
+
+
+

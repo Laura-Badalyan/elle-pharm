@@ -1,6 +1,6 @@
 let data = [];
 $.ajax({
-  url: 'https://jsonplaceholder.typicode.com/albums',
+  url: "https://fakestoreapi.com/products/",
   method: "GET",
   dataType: 'json',
   data: {
@@ -11,8 +11,3 @@ $.ajax({
     // console.log(data);
   }
 });
-
-// $.get("https://fakestoreapi.com/products/",function (data) {
-//     products = data;
-//     toShow(products);
-// })
