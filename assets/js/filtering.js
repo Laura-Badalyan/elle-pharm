@@ -190,69 +190,172 @@ let filteredBrands = [];
 let brandFiltersCount = 0;
 
 function showBrandFilters(){
+    let filteredBrandName = $(this).children().text().trim();
+
     if($(this).hasClass("active")){
         $(this).removeClass("active");
-        brandFiltersCount--
-    } 
-    else{
-        $(this).addClass("active");
-        brandFiltersCount++
-    } 
-    let filteredBrandName = $(this).children().text().trim();
-    filteredBrands.push(filteredBrandName)
+        brandFiltersCount--;
 
-    if(brandFiltersCount<=2){
-         $(".filter_container").append(`
+        let updateBrandClickedItems = filteredBrands.filter((it) => it != filteredBrandName);
+        filteredBrands = updateBrandClickedItems;
+
+        if(brandFiltersCount<=2){
+            $(".first_second").removeClass("d-none");
+            $("#more_filters").addClass("d-none");
+        }
+        else{
+            $("#more_filters").removeClass("d-none");
+
+        }
+        removeBrandFilters()
+        filteredBrands.map((item)=>{
+            $(".filter_container").append(`
             <div class="js_clean_filter_parent first_second">
-                <span class="filter-name">${filteredBrandName}</span>
-                <span class="js_clean_filter">
-                    <img src="assets/img/Close.svg" alt="close">
-                </span>
-            </div>
-        `);
-        $(".sort-items-block").append(`
-            <div class="js_clean_filter_parent">
-                <span class="filter-name">${filteredBrandName}</span>
+                <span class="filter-name">${item}</span>
                 <span class="js_clean_filter">
                     <img src="assets/img/Close.svg" alt="close">
                 </span>
             </div>
             `);
-    }
+            $(".sort-items-block").append(`
+                <div class="js_clean_filter_parent">
+                    <span class="filter-name">${item}</span>
+                    <span class="js_clean_filter">
+                        <img src="assets/img/Close.svg" alt="close">
+                    </span>
+                </div>
+            `);
+        })
+    } 
     else{
-        $(".brand_filters_count").text(brandFiltersCount);
-        $(".filter-name").text(filteredBrandName);
-        $(".sort-items-block").removeClass("d-none");
-        $("#more_filters").removeClass("d-none");
-        $(".first_second").addClass("d-none");
+        $(".all_brands_filter").removeClass("active");
+        $(this).addClass("active");
+        brandFiltersCount++;
+        filteredBrands.push(filteredBrandName)
 
-        $(".sort-items-block").append(`
-        <span class="js_clean_filter_parent">
-            <span class="filter-name">
-                Ammi
-            </span>
-            <span class="js_clean_filter">
-                <img src="../assets/img/Close.svg" alt="close">
-            </span>
-        </span>
-        `)
-        
-    }
+        if(brandFiltersCount<=2){
+            removeBrandFilters()
+            filteredBrands.map((item)=>{
+                $(".filter_container").append(`
+                <div class="js_clean_filter_parent first_second">
+                    <span class="filter-name">${item}</span>
+                    <span class="js_clean_filter">
+                        <img src="assets/img/Close.svg" alt="close">
+                    </span>
+                </div>
+                `);
+                $(".sort-items-block").append(`
+                    <div class="js_clean_filter_parent">
+                        <span class="filter-name">${item}</span>
+                        <span class="js_clean_filter">
+                            <img src="assets/img/Close.svg" alt="close">
+                        </span>
+                    </div>
+                `);
+            })
+        }
+        else{
+
+            $(".filter_container").html(`
+        <div id="more_filters" class="dropdown dropdown_sorty_by dropdown_sorty_by_brand d-none">
+            <div style="display: flex;">
+                <a role="button" href="#" class="dropdown-toggle filterBrandTwoPlus">
+                    <span class="sorting ">
+                        <img src="assets/img/filters.svg" alt="filter">
+                        <span class="brand_filters_count"></span>
+                        Tags
+                    </span>
+                </a>&nbsp;
+                <a class="reset_all" href="#">Reset all </a>
+            </div>
+        </div>
+
+        <div class="dropdown-menu dropdown_menu_sortItems" role="menu" x-placement="bottom-start"
+            style="position: absolute; transform: translate3d(15px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+            <div class="sort-items-block d-none">
+            </div>
+        </div>
+            `);
+            $(".filter-name").text(filteredBrandName);
+            $(".sort-items-block").removeClass("d-none");
+            $("#more_filters").removeClass("d-none");
+            $(".first_second").addClass("d-none");
+            
+            filteredBrands.map((item)=>{
+                $(".sort-items-block").append(`
+                    <span class="js_clean_filter_parent">
+                        <span class="filter-name"> ${item} </span>
+                        <span class="js_clean_filter">
+                            <img src="../assets/img/Close.svg" alt="close">
+                        </span>
+                    </span>
+                `)
+            })
+        }
+
+    } 
+    $(".brand_filters_count").text(brandFiltersCount);
+    $(".filterBrandTwoPlus").click(showAllFilters)
+
 }
 
 function removeBrandFilters(){
-    // =======================================================
+
+    $(".filter_container").html(`
+        <div id="more_filters" class="dropdown dropdown_sorty_by dropdown_sorty_by_brand d-none">
+            <div style="display: flex;">
+                <a role="button" href="#" class="dropdown-toggle filterBrandTwoPlus">
+                    <span class="sorting ">
+                        <img src="assets/img/filters.svg" alt="filter">
+                        <span class="brand_filters_count"></span>
+                        Tags
+                    </span>
+                </a>&nbsp;
+                <a class="reset_all" href="#">Reset all </a>
+            </div>
+        </div>
+
+        <div class="dropdown-menu dropdown_menu_sortItems" role="menu" x-placement="bottom-start"
+            style="position: absolute; transform: translate3d(15px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+            <div class="sort-items-block d-none">
+            </div>
+        </div>
+    `);
+    $(".sort-items-block").html(`
+    <div id="more_filters" class="dropdown dropdown_sorty_by dropdown_sorty_by_brand d-none">
+            <div style="display: flex;">
+                <a role="button" href="#" class="dropdown-toggle filterBrandTwoPlus">
+                    <span class="sorting ">
+                        <img src="assets/img/filters.svg" alt="filter">
+                        <span class="brand_filters_count"></span>
+                        Tags
+                    </span>
+                </a>&nbsp;
+                <a class="reset_all" href="#">Reset all </a>
+            </div>
+        </div>
+
+        <div class="dropdown-menu dropdown_menu_sortItems" role="menu" x-placement="bottom-start"
+            style="position: absolute; transform: translate3d(15px, 36px, 0px); top: 0px; left: 0px; will-change: transform;">
+            <div class="sort-items-block d-none">
+            </div>
+        </div>`)
 }
 
 function resetAll(){
-    // =======================================================
+    console.log("resetAll");
 }
 
 function showAllFilters(){
-    $(".js-filter-tags-container").removeClass("d-none")
-    $(".sort-items-block").addClass("d-block")
-    $("#more_filters").removeClass("d-none");
-    $(".first_second").addClass("d-none")
+    console.log("click");
+    // $(".js-filter-tags-container").removeClass("d-none")
+    // $("#more_filters").removeClass("d-none");
+    // $(".dropdown_menu_sortItems").removeClass("d-none");
+    $(".dropdown_menu_sortItems").hasClass("show") ?
+    $(".dropdown_menu_sortItems").removeClass("show") :
+    $(".dropdown_menu_sortItems").addClass("show");
+    // $(".first_second").addClass("d-none")
+    // $(".sort-items-block").addClass("d-block")
 
 }
 
@@ -265,15 +368,13 @@ function allBrandsFilter(){
 $(".js_clean_filter").click(removeBrandFilters)
 $(".brand_filter").click(showBrandFilters)
 $(".all_brands_filter ").click(allBrandsFilter)
-$(".filterBrandTwoPlus").click(showAllFilters)
-$(".js_clean_filter").click(removeBrandFilters)
+// $(".filterBrandTwoPlus").click(showAllFilters)
 $(".reset_all").click(resetAll)
 $(".reset-all-btn").click(resetAll)
 
 
 // filter by Manufacturers
 // ------------------------------------------------------------------------
-
 
 
 // filter by Price
