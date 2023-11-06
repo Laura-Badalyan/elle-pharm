@@ -1,5 +1,3 @@
-
-
 function openAndCloseFilters() {
     $(this).next().hasClass("d-none") ? $(this).next().removeClass("d-none") : $(this).next().addClass("d-none")
 }
@@ -292,15 +290,75 @@ function showBrandFilters(){
                 `)
             })
         }
-
     } 
     $(".brand_filters_count").text(brandFiltersCount);
     $(".filterBrandTwoPlus").click(showAllFilters)
+    $(".js_clean_filter").click(removefilteredItem)
+    $(".reset_all").click(resetAll)
 
+    // For all data
+    // let filterItems = initFilteringItems();
+    let filterItems = [
+        {
+            "id": 1,
+            "title": "Ammi",
+            "price": 109.95,
+            "description": "Your perfect pack for everyday use and walks in the forest. Stash your laptop (up to 15 inches) in the padded sleeve, your everyday",
+            "category": "men's clothing",
+            "image": "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
+            "rating": {
+                "rate": 3.9,
+                "count": 120
+            }
+        },
+        {
+            "id": 2,
+            "title": "B-esta",
+            "price": 22.3,
+            "description": "Slim-fitting style, contrast raglan long sleeve, three-button henley placket, light weight & soft fabric for breathable and comfortable wearing. And Solid stitched shirts with round neck made for durability and a great fit for casual fashion wear and diehard baseball fans. The Henley style round neckline includes a three-button placket.",
+            "category": "men's clothing",
+            "image": "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg",
+            "rating": {
+                "rate": 4.1,
+                "count": 259
+            }
+        },
+        {
+            "id": 3,
+            "title": "Across Co. Ltd.",
+            "price": 55.99,
+            "description": "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
+            "category": "men's clothing",
+            "image": "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
+            "rating": {
+                "rate": 4.7,
+                "count": 500
+            }
+        }
+    ]
+    let changingItems = [];
+     filterItems.map((item)=>{
+        filteredBrands.map((filteredBrandName)=>{
+            if(item.title == filteredBrandName){
+                changingItems.push(item)
+            }
+        })
+    })
+    console.log(filterItems, filteredBrands, changingItems);
+    insertFilteredData(changingItems)
+}
+
+function removefilteredItem(){
+    $(this).parent().addClass("d-none");
+    // let updateBrandClickedItems = filteredBrands.filter((it) => it != filteredBrandName);
+    // filteredBrands = updateBrandClickedItems;
+    brandFiltersCount--;
+    console.log($(this).parent().closest("span.filter-name").text());
+    brandFiltersCount<0 ? brandFiltersCount=0 : null;
+    $(".brand_filters_count").text(brandFiltersCount);
 }
 
 function removeBrandFilters(){
-
     $(".filter_container").html(`
         <div id="more_filters" class="dropdown dropdown_sorty_by dropdown_sorty_by_brand d-none">
             <div style="display: flex;">
@@ -343,20 +401,13 @@ function removeBrandFilters(){
 }
 
 function resetAll(){
-    console.log("resetAll");
+    location.reload();
 }
 
 function showAllFilters(){
-    console.log("click");
-    // $(".js-filter-tags-container").removeClass("d-none")
-    // $("#more_filters").removeClass("d-none");
-    // $(".dropdown_menu_sortItems").removeClass("d-none");
     $(".dropdown_menu_sortItems").hasClass("show") ?
     $(".dropdown_menu_sortItems").removeClass("show") :
     $(".dropdown_menu_sortItems").addClass("show");
-    // $(".first_second").addClass("d-none")
-    // $(".sort-items-block").addClass("d-block")
-
 }
 
 function allBrandsFilter(){
@@ -364,17 +415,20 @@ function allBrandsFilter(){
     $(".brand_filter").removeClass("active");
 }
 
+function searchBrandName(){
+    $(".brand_filter").removeClass("d-none");
+    let searchValue = $(".brands_filter_search").val();
+    $(".filer_brand_item").map(function (i,brandname) {
+        $(this).text().includes(searchValue)  ? null : $(this).parent().parent().addClass("d-none");
+        console.log($(this).parent().parent(),$(this).text(), searchValue);
+    })
+}
 
-$(".js_clean_filter").click(removeBrandFilters)
 $(".brand_filter").click(showBrandFilters)
+$(".laboratory_filter").click(showBrandFilters)
 $(".all_brands_filter ").click(allBrandsFilter)
-// $(".filterBrandTwoPlus").click(showAllFilters)
-$(".reset_all").click(resetAll)
 $(".reset-all-btn").click(resetAll)
-
-
-// filter by Manufacturers
-// ------------------------------------------------------------------------
+$(".brand_search_button").click(searchBrandName)
 
 
 // filter by Price
@@ -428,7 +482,3 @@ function showFilteredItems(){
     })
     insertFilteredData(filteredItems)
 }
-
-
-
-
